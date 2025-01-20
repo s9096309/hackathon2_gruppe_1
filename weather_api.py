@@ -1,6 +1,12 @@
 import requests
+import os
+from dotenv import load_dotenv
 
-API_KEY = "d99eeffdfe41fc93fc4279e8e5c1ce6d"
+# Lade die .env Datei
+load_dotenv()
+
+# Hole den API-Key aus der .env Datei
+API_KEY = os.getenv("API_KEY")
 
 def get_weather(location):
     """
