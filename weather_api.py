@@ -1,20 +1,30 @@
 import requests
 
-API_KEY = "d99eeffdfe41fc93fc4279e8e5c1ce6d"  # Setze hier deinen API-Schlüssel ein
-BASE_URL = "https://api.openweathermap.org/data/2.5/weather"
+API_KEY = "d99eeffdfe41fc93fc4279e8e5c1ce6d"
 
-stadt = input("What is your location? ").strip()
+def get_weather(location):
+    """
+    Holt das Wetter für den angegebenen Standort.
+    """
+    url = f"http://api.openweathermap.org/data/2.5/weather?q={location}&appid={API_KEY}&units=metric"
+    response = requests.get(url)
 
-params = {"q": stadt, "appid": API_KEY, "units": "metric"}
-response = requests.get(BASE_URL, params=params)
+    if response.status_code == 200:
+        weather_data = response.json()
+        temperature = weather_data["main"]["temp"]
+        weather_condition = weather_data["weather"][0]["description"]
+        return temperature, weather_condition
+    else:
+        return None, None
 
-# API-Antwort ausgeben
-print("API-Antwort:", response.status_code, response.text)
+# Standort vom Benutzer abfragen
+location = input("Gib deinen Standort ein: ")
 
-if response.status_code == 200:
-    data = response.json()
-    wetter = data["weather"][0]["description"]
-    temperatur = data["main"]["temp"]
-    print(f"The weather in {stadt}: {wetter}, {temperatur}°C")
+# Wetterdaten abrufen und anzeigen
+temperature, weather_condition = get_weather(location)
+if temperature is not None and weather_condition is not None:
+    print(f"Wetter für {location}:")
+    print(f"Temperature: {temperature}°C")
+    print(f"Wetterbedingungen: {weather_condition}")
 else:
-    print("Fehler: Ort nicht gefunden oder API-Anfrage fehlgeschlagen.")
+    print("Fehler beim Abrufen des Wetters. Bitte überprüfe den Standort.")
