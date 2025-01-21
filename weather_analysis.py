@@ -37,7 +37,7 @@ def gib_musikempfehlung(temp_kategorie, wetter_kategorie):
         "heiß": "https://open.spotify.com/playlist/37i9dQZF1DX3fXJqxGjuEP",      # Tropical
         "regnet": "https://open.spotify.com/playlist/4NV3zE3iyVp7JdaKoQrITG",    # Regen
         "neutral": "https://open.spotify.com/playlist/37i9dQZF1DWWvoJqVv7uOD",   # Everyday Favorites
-        "schneit": "https://open.spotify.com/album/3FdJxeAEFdLsmuSGgHi7Oa",      # Storm / Dark Orchestra
+        "schneit": "https://open.spotify.com/album/6A9POxb0v1H4gNTAfD5Pn7",      # Winter Chill Lo-Fi Hip Hop
         "stürmt": "https://open.spotify.com/album/3FdJxeAEFdLsmuSGgHi7Oa",       # Storm / Dark Orchestra
         "hagelt": "https://open.spotify.com/album/3FdJxeAEFdLsmuSGgHi7Oa"        # Storm / Dark Orchestra
     }
