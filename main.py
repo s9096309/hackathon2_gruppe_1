@@ -27,7 +27,7 @@ if temperature is not None and weather_condition is not None:
     print(musik_link)
 
     # SMS senden (Beispiel-Nummer)
-    phone_number = "491771786208"
+    phone_number = input("Bitte geben sie ihre Telefonnummer an")
     message = f"Wetterbericht für {location}: {temperature}°C, {weather_condition}. Musikempfehlung: {musik_link}"
 
     response = requests.post(
