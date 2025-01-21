@@ -1,6 +1,4 @@
 
-Natürlich! Hier ist eine kurze, verständliche Erklärung für deine Kollegin:
-
 Erklärung zu unserem Wetter-Musik-Programm
 Was macht das Programm?
 Unser Programm kombiniert Wetterdaten mit Musikempfehlungen. Es funktioniert wie folgt:
