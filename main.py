@@ -47,8 +47,7 @@ def main():
             print(f"Fehler beim Senden der Nachricht: {response.status_code}")
 
         # Team-Nachrichten abrufen
-        """
-        
+""" 
         response = requests.get(f"{API_BASE_URL}/team/getMessages/{TEAM_NAME}")
         if response.status_code == 200:
             messages = response.json()
@@ -61,7 +60,8 @@ def main():
     
     else:
         print(f"Fehler beim Abrufen des Wetters für {location}.")
-    """
+
+"""
 
 if __name__ == "__main__":
     main()
