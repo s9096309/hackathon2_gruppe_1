@@ -1,12 +1,15 @@
 import requests
-import os
 from dotenv import load_dotenv
+import os
 
-# Lade die .env Datei
+# .env-Datei laden
 load_dotenv()
 
-# Hole den API-Key aus der .env Datei
+# API-Key abrufen
 API_KEY = os.getenv("API_KEY")
+
+if not API_KEY:
+    raise ValueError("API-Key konnte nicht geladen werden. Überprüfe die .env-Datei!")
 
 def get_weather(location):
     """
@@ -22,15 +25,3 @@ def get_weather(location):
         return temperature, weather_condition
     else:
         return None, None
-
-# Standort vom Benutzer abfragen
-location = input("Gib deinen Standort ein: ")
-
-# Wetterdaten abrufen und anzeigen
-temperature, weather_condition = get_weather(location)
-if temperature is not None and weather_condition is not None:
-    print(f"Wetter für {location}:")
-    print(f"Temperature: {temperature}°C")
-    print(f"Wetterbedingungen: {weather_condition}")
-else:
-    print("Fehler beim Abrufen des Wetters. Bitte überprüfe den Standort.")
