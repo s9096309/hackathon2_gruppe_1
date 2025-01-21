@@ -41,6 +41,8 @@ if temperature is not None and weather_condition is not None:
         print(f"Fehler beim Senden der Nachricht: {response.status_code}")
 
     # Team-Nachrichten abrufen
+    """
+    
     response = requests.get(f"{API_BASE_URL}/team/getMessages/{TEAM_NAME}")
     if response.status_code == 200:
         messages = response.json()
@@ -53,3 +55,4 @@ if temperature is not None and weather_condition is not None:
 
 else:
     print(f"Fehler beim Abrufen des Wetters für {location}.")
+"""
