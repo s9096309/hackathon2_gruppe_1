@@ -24,13 +24,14 @@ def get_weather(location):
         return None, None
 
 # Standort vom Benutzer abfragen
-location = input("Gib deinen Standort ein: ")
+#location = input("Gib deinen Standort ein: ")
 
 # Wetterdaten abrufen und anzeigen
-temperature, weather_condition = get_weather(location)
-if temperature is not None and weather_condition is not None:
-    print(f"Wetter für {location}:")
-    print(f"Temperature: {temperature}°C")
-    print(f"Wetterbedingungen: {weather_condition}")
-else:
-    print("Fehler beim Abrufen des Wetters. Bitte überprüfe den Standort.")
+def get_and_print_weather_data(location):
+    temperature, weather_condition = get_weather(location)
+    if temperature is not None and weather_condition is not None:
+        print(f"Wetter für {location}:")
+        print(f"Temperature: {temperature}°C")
+        print(f"Wetterbedingungen: {weather_condition}")
+    else:
+        print("Fehler beim Abrufen des Wetters. Bitte überprüfe den Standort.")
