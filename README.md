@@ -1,5 +1,4 @@
 
-
 Natürlich! Hier ist eine kurze, verständliche Erklärung für deine Kollegin:
 
 Erklärung zu unserem Wetter-Musik-Programm
