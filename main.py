@@ -56,3 +56,5 @@ if temperature is not None and weather_condition is not None:
 else:
     print(f"Fehler beim Abrufen des Wetters für {location}.")
 """
+
+# Test
