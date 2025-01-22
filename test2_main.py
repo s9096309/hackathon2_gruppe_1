@@ -3,7 +3,7 @@ import time
 from weather_api import get_weather
 from weather_analysis import kategorisiere_temperatur, analysiere_wetter, gib_musikempfehlung
 
-TEAM_NAME = "Die Wilden Wetterfrösche"
+TEAM_NAME = "Test1"
 API_BASE_URL = "http://hackathons.masterschool.com:3030"
 RATE_LIMIT_SECONDS = 600
 
