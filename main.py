@@ -31,6 +31,28 @@ def main():
         print(f"Für {current_location} hast du folgende Musikempfehlung:")
         print(musik_link)
 
+        """
+        TODO suggestion for pseudo code for high level logic:
+        Team T: A, B, C (einmalig)
+
+        while True:
+            neue nachrichten abrufen
+            fuer jede neue Nachricht, extrahiere Standort
+            frage Wetter ab
+            gib Musikempfehlung
+            verschicke SMS (wichtig: Hier ein Timer einbauen, rate limit, etc damit ihr nicht mehr als eine SMS alle 10 Minuten schickt!)
+
+            A: Bin in Muenchen
+            App: In Muenchen ist es sonnig, hoere klassische Musik <spotify playlist link>
+
+            B: Bin in Berlin
+            App: In Berlin regnet es, hoere Pop Musik <spotify playlist link>
+
+            ...
+
+
+        """
+
 
         # SMS senden (Beispiel-Nummer)
         phone_number = "491771786208"
@@ -38,6 +60,7 @@ def main():
 
         response = requests.post(
             f"{API_BASE_URL}/sms/send",
+            # TODO double check http://hackathons.masterschool.com:3030/api-docs/#/default/post_sms_send
             json={"phoneNumber": phone_number, "teamName": TEAM_NAME, "message": message}
         )
 
