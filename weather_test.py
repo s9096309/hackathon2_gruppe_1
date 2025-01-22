@@ -19,22 +19,20 @@ def test_analysiere_wetter():
 
 def test_gib_musikempfehlung():
     assert(gib_musikempfehlung("bitterkalt", "neutral"),
-                     "https://open.spotify.com/album/6A9POxb0v1H4gNTAfD5Pn7")
+                     "https://www.youtube.com/watch?v=cpUuU07_iMc")
     assert(gib_musikempfehlung("warm", "regnet"),
-                     "https://open.spotify.com/playlist/4NV3zE3iyVp7JdaKoQrITG")
+                     "https://www.youtube.com/watch?v=gQWnGRtLFeE")
     assert(gib_musikempfehlung("heiß", "sonnig"),
-                     "https://open.spotify.com/playlist/37i9dQZF1DX3fXJqxGjuEP")
+                     "https://www.youtube.com/watch?v=QQQpkll5aoA")
     assert(gib_musikempfehlung("neutral", "neutral"),
-                     "https://open.spotify.com/playlist/37i9dQZF1DWWvoJqVv7uOD")
+                     "https://www.youtube.com/watch?v=1DjDs3LiQrE")
 
 def test_get_weather():
+     # Für den Test verwenden wir einen Beispielstandort.
     location = "Berlin"
     temperature, weather_condition = get_weather(location)
-    assert(temperature)
-    assert(weather_condition)
-
-    # Hier solltest du einen echten API-Key verwenden oder einen Mock für die API-Antwort erstellen.
-    # Für den Test verwenden wir einen Beispielstandort.
+    assert(temperature)   # nicht None oder leer ist
+    assert(weather_condition) #nicht None oder leer ist
 
 
 if __name__ == '__main__':
