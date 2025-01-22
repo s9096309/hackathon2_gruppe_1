@@ -1,42 +1,56 @@
 import requests
 import json
-from weather_api import get_weather
-from weather_analysis import kategorisiere_temperatur, analysiere_wetter, gib_musikempfehlung
+import time
+from weather_api import get_weather  # Wetter-API
+from weather_analysis import kategorisiere_temperatur, analysiere_wetter, gib_musikempfehlung  # Analyse und Musikempfehlung
 
 # API-Konfiguration
 TEAM_NAME = "Die Wilden Wetterfrösche"
 API_BASE_URL = "http://hackathons.masterschool.com:3030"
-TEST_MODE = True  # Wenn True, werden keine SMS gesendet, sondern nur in der Konsole ausgegeben
+MASTERSCHOOL_SMS_NUMBER = "491771786208"  # Masterschool Nummer
+VERARBEITETE_DATEI = "verarbeitete_nachrichten.json"  # Datei für persistente Speicherung
 
-# Set zur Speicherung von verarbeiteten Nachrichten
-verarbeitete_nachrichten = set()
+# Bereits verarbeitete Nachrichten laden
+try:
+    with open(VERARBEITETE_DATEI, "r", encoding="utf-8") as file:
+        verarbeitete_nachrichten = set(json.load(file))
+except FileNotFoundError:
+    verarbeitete_nachrichten = set()
 
 
-def greeting(phone_number):
+def speichere_verarbeitete_nachrichten():
     """
-    Sendet eine Begrüßungsnachricht.
+    Speichert die verarbeiteten Nachrichten in einer JSON-Datei.
     """
-    nachricht = "Hallo, wie lautet dein Standort?"
-    if TEST_MODE:
-        print(f"[TEST_MODE] SMS an {phone_number}: {nachricht}")
+    with open(VERARBEITETE_DATEI, "w", encoding="utf-8") as file:
+        json.dump(list(verarbeitete_nachrichten), file)
+
+
+def sende_sms(empfaenger, nachricht):
+    """
+    Sendet eine SMS über die Masterschool API.
+    """
+    response = requests.post(
+        f"{API_BASE_URL}/sms/send",
+        json={"phoneNumber": empfaenger, "teamName": TEAM_NAME, "message": nachricht}
+    )
+    if response.status_code == 200:
+        print(f"Nachricht erfolgreich gesendet an {empfaenger}.")
     else:
-        response = requests.post(
-            f"{API_BASE_URL}/sms/send",
-            json={"phoneNumber": phone_number, "teamName": TEAM_NAME, "message": nachricht},
-        )
-        if response.status_code == 200:
-            print(f"Nachricht erfolgreich gesendet an {phone_number}.")
-        else:
-            print(f"Fehler beim Senden der Nachricht: {response.status_code}, {response.text}")
+        print(f"Fehler beim Senden der Nachricht: {response.status_code}, {response.text}")
 
 
 def abrufe_nachrichten():
     """
-    Holt eingehende Nachrichten von der Masterschool API.
+    Holt eingehende Nachrichten von der Masterschool API und speichert sie in einer Datei.
     """
     response = requests.get(f"{API_BASE_URL}/team/getMessages/{TEAM_NAME}")
     if response.status_code == 200:
-        return response.json()
+        nachrichten = response.json()
+        # Nachrichten in einer Datei speichern
+        with open("nachrichten.json", "w", encoding="utf-8") as file:
+            json.dump(nachrichten, file, indent=4, ensure_ascii=False)
+        return nachrichten
     else:
         print(f"Fehler beim Abrufen der Nachrichten: {response.status_code}, {response.text}")
         return {}
@@ -52,32 +66,15 @@ def finde_stadt_in_nachricht(nachricht, staedte_liste):
     return None
 
 
-def sende_sms(empfaenger, nachricht):
-    """
-    Sendet eine SMS über die Masterschool API.
-    """
-    if TEST_MODE:
-        print(f"[TEST_MODE] SMS an {empfaenger}: {nachricht}")
-    else:
-        response = requests.post(
-            f"{API_BASE_URL}/sms/send",
-            json={"phoneNumber": empfaenger, "teamName": TEAM_NAME, "message": nachricht},
-        )
-        if response.status_code == 200:
-            print(f"Nachricht erfolgreich gesendet an {empfaenger}.")
-        else:
-            print(f"Fehler beim Senden der Nachricht: {response.status_code}, {response.text}")
-
-
 def verarbeite_nachrichten():
     """
-    Verarbeitet alle eingehenden Nachrichten und sendet Antworten mit Wetterdaten und Musikempfehlung.
+    Verarbeitet eingehende Nachrichten und sendet passende Antworten mit Wetterbericht und Musikempfehlung.
     """
-    # Lade die Städte aus der JSON-Datei
+    # Lade die Liste der Städte aus der JSON-Datei
     with open("city.list.json", "r", encoding="utf-8") as file:
         staedte_liste = [city["name"].lower() for city in json.load(file)]
 
-    # Nachrichten einmalig abrufen (kein Loop!)
+    # Nachrichten abrufen
     nachrichten = abrufe_nachrichten()
 
     for phone_number, msgs in nachrichten.items():
@@ -88,12 +85,12 @@ def verarbeite_nachrichten():
             # Eindeutigen Identifier für die Nachricht erstellen
             nachrichten_identifier = f"{phone_number}_{nachricht}_{received_at}"
 
-            # Überspringe verarbeitete Nachrichten
+            # Überspringe bereits verarbeitete Nachrichten
             if nachrichten_identifier in verarbeitete_nachrichten:
                 continue
 
-            print(f"Neue Nachricht erhalten von {phone_number}: {nachricht}")
             verarbeitete_nachrichten.add(nachrichten_identifier)
+            print(f"Neue Nachricht erhalten von {phone_number}: {nachricht}")
 
             # Stadt in der Nachricht finden
             stadt = finde_stadt_in_nachricht(nachricht, staedte_liste)
@@ -101,11 +98,11 @@ def verarbeite_nachrichten():
                 # Wetterdaten abrufen
                 temperature, weather_condition = get_weather(stadt)
                 if temperature is not None and weather_condition is not None:
-                    # Temperatur und Wetterbedingungen analysieren
+                    # Analyse der Wetterdaten
                     temp_kategorie = kategorisiere_temperatur(temperature)
                     wetter_kategorie = analysiere_wetter(weather_condition)
 
-                    # Musikempfehlung erstellen
+                    # Musikempfehlung generieren
                     musik_link = gib_musikempfehlung(temp_kategorie, wetter_kategorie)
 
                     # Antwortnachricht erstellen
@@ -118,13 +115,28 @@ def verarbeite_nachrichten():
             else:
                 antwort = "Deine Stadt konnte nicht gefunden werden. Bitte überprüfe die Eingabe."
 
-            # Antwort-SMS senden
+            # Antwort per SMS senden
             sende_sms(phone_number, antwort)
+
+    # Verarbeitete Nachrichten speichern
+    speichere_verarbeitete_nachrichten()
+
+
+def begruessung(empfaenger):
+    """
+    Begrüßt den Nutzer per SMS und fragt nach dem Standort.
+    """
+    nachricht = "Hallo, wie lautet dein Standort?"
+    sende_sms(empfaenger, nachricht)
 
 
 if __name__ == "__main__":
-    ask_phone_number = input("Geben Sie Ihre Handynummer ein: ")
-    greeting(ask_phone_number)
+    # Nutzer begrüßen (Handynummer hier als Beispiel)
+    user_phone_number = input("Bitte gib die Handynummer ein, um den Nutzer zu begrüßen: ")
+    begruessung(user_phone_number)
 
-    # Verarbeite Nachrichten (einmalige Verarbeitung)
-    verarbeite_nachrichten()
+    # Nachrichten verarbeiten
+    print("Warte auf Nachrichten...")
+    while True:
+        verarbeite_nachrichten()
+        time.sleep(30)  # 30 Sekunden warten, bevor erneut Nachrichten abgerufen werden
