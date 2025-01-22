@@ -30,7 +30,7 @@ if temperature is not None and weather_condition is not None:
     phone_number = input("Bitte geben sie ihre Telefonnummer an")
     message = f"Wetterbericht für {location}: {temperature}°C, {weather_condition}. Musikempfehlung: {musik_link}"
 
-    """response = requests.post(
+    response = requests.post(
         f"{API_BASE_URL}/sms/send",
         json={"phoneNumber": phone_number, "teamName": TEAM_NAME, "message": message}
     )
@@ -53,4 +53,3 @@ if temperature is not None and weather_condition is not None:
 
 else:
     print(f"Fehler beim Abrufen des Wetters für {location}.")
-"""
