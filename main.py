@@ -7,9 +7,12 @@ TEAM_NAME = "Die Wilden Wetterfrösche"
 API_BASE_URL = "http://hackathons.masterschool.com:3030"
 MASTERSCHOOL_SMS_NUMBER = "491771786208"  # Masterschool Nummer
 
+# Testmodus aktivieren/deaktivieren
+TEST_MODE = True  # Setze auf False, um echte SMS zu senden
+
 def abrufe_nachrichten():
     """
-    Holt eingehende Nachrichten von der Masterschool API
+    Holt eingehende Nachrichten von der Masterschool API.
     """
     response = requests.get(f"{API_BASE_URL}/team/getMessages/{TEAM_NAME}")
     if response.status_code == 200:
@@ -29,16 +32,19 @@ def finde_stadt_in_nachricht(nachricht, staedte_liste):
 
 def sende_sms(empfaenger, nachricht):
     """
-    Sendet eine SMS über die Masterschool API.
+    Sendet eine SMS über die Masterschool API oder simuliert das Senden im Testmodus.
     """
-    response = requests.post(
-        f"{API_BASE_URL}/sms/send",
-        json={"phoneNumber": empfaenger, "teamName": TEAM_NAME, "message": nachricht}
-    )
-    if response.status_code == 200:
-        print(f"Nachricht erfolgreich gesendet an {empfaenger}.")
+    if TEST_MODE:
+        print(f"[TEST MODE] SMS an {empfaenger}: {nachricht}")
     else:
-        print(f"Fehler beim Senden der Nachricht: {response.status_code}, {response.text}")
+        response = requests.post(
+            f"{API_BASE_URL}/sms/send",
+            json={"phoneNumber": empfaenger, "teamName": TEAM_NAME, "message": nachricht}
+        )
+        if response.status_code == 200:
+            print(f"Nachricht erfolgreich gesendet an {empfaenger}.")
+        else:
+            print(f"Fehler beim Senden der Nachricht: {response.status_code}, {response.text}")
 
 def verarbeite_nachrichten():
     """
@@ -49,9 +55,15 @@ def verarbeite_nachrichten():
     with open("city.list.json", "r", encoding="utf-8") as file:
         staedte_liste = [city["name"].lower() for city in json.load(file)]
 
-    # Abrufen der eingehenden Nachrichten -> while Loop? (20-30sec)
+    if TEST_MODE:
+        print("[TEST MODE] Nachrichten werden simuliert. Standort und Telefonnummer müssen manuell eingegeben werden.")
+        phone_number = input("Gib die Telefonnummer ein: ").strip()
+        nachricht = input("Gib die Nachricht (mit Stadt) ein: ").strip()
 
-    nachrichten = abrufe_nachrichten()
+        nachrichten = {phone_number: [{"text": nachricht}]}
+    else:
+        # Abrufen der eingehenden Nachrichten
+        nachrichten = abrufe_nachrichten()
 
     for phone_number, msgs in nachrichten.items():
         for msg in msgs:
